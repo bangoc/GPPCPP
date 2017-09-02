@@ -310,7 +310,7 @@ bool can_open(const string& s)
             // check if a file named s exists and can be opened for reading
 {
 	ifstream ff(s.c_str());
-	return ff;
+	return ff.good();
 }
 
 
@@ -330,9 +330,9 @@ Image::Image(Point xy, string s, Suffix::Encoding e)
 	if (e == Suffix::none) e = get_encoding(s);
 	
 	switch(e) {
-	case Suffix::jpg:
-		p = new Fl_JPEG_Image(s.c_str());
-		break;
+//	case Suffix::jpg:
+//		p = new Fl_JPEG_Image(s.c_str());
+//		break;
 	case Suffix::gif:
 		p = new Fl_GIF_Image(s.c_str());
 		break;
