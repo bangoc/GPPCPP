@@ -14,7 +14,7 @@ MESSAGE(STATUS ${FLTK_LIBRARIES})
 include_directories(${CMAKE_SOURCE_DIR}/src/PPP2code)
 include_directories(${FLTK_INCLUDE_DIRS})
 
-set(DEPENDS dl png z pthread Xinerama Xfixes Xcursor Xft Xrender fontconfig)
+set(DEPENDS dl png z pthread Xinerama Xfixes Xcursor Xft Xrender fontconfig jpeg)
 set(PPP2code src/PPP2code/Graph.cpp
              src/PPP2code/GUI.cpp
              src/PPP2code/Simple_window.cpp
@@ -25,3 +25,6 @@ target_link_libraries(chapter12example1 ${FLTK_LIBRARIES} ${DEPENDS})
 
 add_executable(chapter12example2 src/chapter12_example2.cpp ${PPP2code})
 target_link_libraries(chapter12example2 ${FLTK_LIBRARIES} ${DEPENDS})
+
+add_executable(chapter12example3 src/chapter12_example3.cpp ${PPP2code})
+target_link_libraries(chapter12example3 ${FLTK_LIBRARIES} ${DEPENDS})
