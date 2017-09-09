@@ -29,6 +29,9 @@ target_link_libraries(chapter12example2 ${FLTK_LIBRARIES} ${DEPENDS})
 add_executable(chapter12example3 src/chapter12_example3.cpp ${PPP2code})
 target_link_libraries(chapter12example3 ${FLTK_LIBRARIES} ${DEPENDS})
 
+add_executable(chapter13example1 src/chapter13_example1.cpp ${PPP2code})
+target_link_libraries(chapter13example1 ${FLTK_LIBRARIES} ${DEPENDS})
+
 add_executable(chapter15example1 src/chapter15example1.cpp ${PPP2code})
 target_link_libraries(chapter15example1 ${FLTK_LIBRARIES} ${DEPENDS})
 
