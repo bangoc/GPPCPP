@@ -41,7 +41,7 @@ int main() {
     constexpr int x_scale = 30;
     constexpr int y_scale = 30;
 
-    Graph_lib::Function real_exp {exp, r_min, r_max, orig, 200, x_scale, y_scale};
+    Graph_lib::Function real_exp {exp, (double)r_min, (double)r_max, orig, 200, (double)x_scale, (double)y_scale};
     real_exp.set_color(Graph_lib::Color::blue);
 
     Simple_window win {Graph_lib::Point{100, 100}, xmax, ymax, "Approximation"};

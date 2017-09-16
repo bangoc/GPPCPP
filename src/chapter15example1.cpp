@@ -28,9 +28,9 @@ int main() {
 
     Simple_window win {Graph_lib::Point{100, 100}, xmax, ymax, "Function graphing"};
 
-    Graph_lib::Function s {one, r_min, r_max, orig, n_points, x_scale, y_scale};
-    Graph_lib::Function s2 {slope, r_min, r_max, orig, n_points, x_scale, y_scale};
-    Graph_lib::Function s3 {square, r_min, r_max, orig, n_points, x_scale, y_scale};
+    Graph_lib::Function s {one, (double)r_min, (double)r_max, orig, n_points, (double)x_scale, (double)y_scale};
+    Graph_lib::Function s2 {slope, (double)r_min, (double)r_max, orig, n_points, (double)x_scale, (double)y_scale};
+    Graph_lib::Function s3 {square, (double)r_min, (double)r_max, orig, n_points, (double)x_scale, (double)y_scale};
 
     win.attach(s);
     win.attach(s2);
@@ -57,20 +57,20 @@ int main() {
     win.attach(x);
     win.attach(y);
 
-    Graph_lib::Function s4 {cos, r_min, r_max, orig, 400, 30, 30};
+    Graph_lib::Function s4 {cos, (double)r_min, (double)r_max, orig, 400, 30, 30};
     s4.set_color(Graph_lib::Color::blue);
-    Graph_lib::Function s5 {sloping_cos, r_min, r_max, orig, 400, 30, 30};
+    Graph_lib::Function s5 {sloping_cos, (double)r_min, (double)r_max, orig, 400, 30, 30};
     x.label.move(-160, 0);
     x.notches.set_color(Graph_lib::Color::dark_red);
 
     win.attach(s4);
     win.attach(s5);
 
-    Graph_lib::Function f1 {log, 0.000001, r_max, orig, 200, 30, 30};
-    Graph_lib::Function f2 {sin, r_min, r_max, orig, 200, 30, 30};
+    Graph_lib::Function f1 {log, 0.000001, (double)r_max, orig, 200, 30, 30};
+    Graph_lib::Function f2 {sin, (double)r_min, (double)r_max, orig, 200, 30, 30};
     f2.set_color(Graph_lib::Color::blue);
-    Graph_lib::Function f3 {cos, r_min, r_max, orig, 200, 30, 30};
-    Graph_lib::Function f4 {exp, r_min, r_max, orig, 13, x_scale, y_scale};
+    Graph_lib::Function f3 {cos, (double)r_min, (double)r_max, orig, 200, 30, 30};
+    Graph_lib::Function f4 {exp, (double)r_min, (double)r_max, orig, 13, (double)x_scale, (double)y_scale};
     f4.set_color(Graph_lib::Color::green);
 
     win.attach(f1);
