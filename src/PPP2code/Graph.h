@@ -3,11 +3,12 @@
 #define GRAPH_GUARD 1
 
 #include "Point.h"
-#include<vector>
-//#include<string>
-//#include<cmath>
+#include <vector>
+#include <string>
+#include <cmath>
+#include <functional>
+#include <initializer_list>
 #include "fltk.h"
-#include "std_lib_facilities.h"
 
 namespace Graph_lib {
 // defense against ill-behaved Linux macros:
@@ -86,8 +87,8 @@ private:
 };
 
 template<class T> class Vector_ref {
-	vector<T*> v;
-	vector<T*> owned;
+	std::vector<T*> v;
+	std::vector<T*> owned;
 public:
 	Vector_ref() {}
 
@@ -116,7 +117,7 @@ typedef double Fct(double);
 class Shape  {	// deals with color and style, and holds sequence of lines
 protected:
 	Shape() { }
-	Shape(initializer_list<Point> lst);  // add() the Points to this Shape
+	Shape(std::initializer_list<Graph_lib::Point> lst);  // add() the Points to this Shape
 
 //	Shape() : lcolor(fl_color()),
 //		ls(0),
@@ -155,7 +156,7 @@ public:
 	Shape(const Shape&) = delete;
 	Shape& operator=(const Shape&) = delete;
 private:
-	vector<Point> points;	// not used by all shapes
+	std::vector<Point> points;	// not used by all shapes
 	Color lcolor {fl_color()};
 	Line_style ls {0};
 	Color fcolor {Color::invisible};
@@ -190,12 +191,12 @@ struct Rectangle : Shape {
 
 	Rectangle(Point xy, int ww, int hh) :w{ ww }, h{ hh }
 	{
-		if (h<=0 || w<=0) error("Bad rectangle: non-positive side");
+		if (h<=0 || w<=0) throw std::string("Bad rectangle: non-positive side");
 		add(xy);
 	}
 	Rectangle(Point x, Point y) :w{ y.x - x.x }, h{ y.y - x.y }
 	{
-		if (h<=0 || w<=0) error("Bad rectangle: first point is not top left");
+		if (h<=0 || w<=0) throw std::string("Bad rectangle: first point is not top left");
 		add(x);
 	}
 	void draw_lines() const;
@@ -236,19 +237,22 @@ struct Polygon : Closed_polyline {	// closed sequence of non-intersecting lines
 
 struct Lines : Shape {	// indepentdent lines
 	Lines() {}
-	Lines(initializer_list<Point> lst) : Shape{lst} { if (lst.size() % 2) error("odd number of points for Lines"); }
+	Lines(std::initializer_list<Graph_lib::Point> lst) :
+            Graph_lib::Shape{lst} {
+        if (lst.size() % 2) throw std::string("odd number of points for Lines");
+    }
 	void draw_lines() const;
 	void add(Point p1, Point p2) { Shape::add(p1); Shape::add(p2); }
 };
 
 struct Text : Shape {
 	// the point is the bottom left of the first letter
-	Text(Point x, const string& s) : lab{ s } { add(x); }
+	Text(Point x, const std::string& s) : lab{ s } { add(x); }
 
 	void draw_lines() const;
 
-	void set_label(const string& s) { lab = s; }
-	string label() const { return lab; }
+	void set_label(const std::string& s) { lab = s; }
+	std::string label() const { return lab; }
 
 	void set_font(Font f) { fnt = f; }
 	Font font() const { return Font(fnt); }
@@ -256,7 +260,7 @@ struct Text : Shape {
 	void set_font_size(int s) { fnt_sz = s; }
 	int font_size() const { return fnt_sz; }
 private:
-	string lab;	// label
+	std::string lab;	// label
 	Font fnt{ fl_font() };
 	int fnt_sz{ (14<fl_size()) ? fl_size() : 14 };	// at least 14 point
 };
@@ -265,7 +269,7 @@ private:
 struct Axis : Shape {
 	// representation left public
 	enum Orientation { x, y, z };
-	Axis(Orientation d, Point xy, int length, int nummber_of_notches=0, string label = "");
+	Axis(Orientation d, Point xy, int length, int nummber_of_notches=0, std::string label = "");
 
 	void draw_lines() const;
 	void move(int dx, int dy);
@@ -324,19 +328,19 @@ struct Mark : Text {
 */
 
 struct Marked_polyline : Open_polyline {
-	Marked_polyline(const string& m) :mark(m) { }
+	Marked_polyline(const std::string& m) :mark(m) { }
 	void draw_lines() const;
 private:
-	string mark;
+	std::string mark;
 };
 
 struct Marks : Marked_polyline {
-	Marks(const string& m) :Marked_polyline(m)
+	Marks(const std::string& m) :Marked_polyline(m)
 	{ set_color(Color(Color::invisible)); }
 };
 
 struct Mark : Marks {
-	Mark(Point xy, char c) : Marks(string(1,c)) {add(xy); }
+	Mark(Point xy, char c) : Marks(std::string(1,c)) {add(xy); }
 };
 
 /*
@@ -359,10 +363,10 @@ struct Suffix {
 	enum Encoding { none, jpg, gif, bmp };
 };
 
-Suffix::Encoding get_encoding(const string& s);
+Suffix::Encoding get_encoding(const std::string& s);
 
 struct Image : Shape {
-	Image(Point xy, string s, Suffix::Encoding e = Suffix::none);
+	Image(Point xy, std::string s, Suffix::Encoding e = Suffix::none);
 	~Image() { delete p; }
 	void draw_lines() const;
 	void set_mask(Point xy, int ww, int hh) { w=ww; h=hh; cx=xy.x; cy=xy.y; }

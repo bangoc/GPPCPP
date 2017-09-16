@@ -5,11 +5,15 @@
 #include "Simple_window.h"
 #include "GUI.h"
 
+#include <iostream>
+#include <fstream>
+#include <string>
+
 struct Distribution {
     int year, young, middle, old;
 };
 
-istream& operator>>(istream& is, Distribution& d) {
+std::istream& operator>>(std::istream& is, Distribution& d) {
     char ch1 = 0;
     char ch2 = 0;
     char ch3 = 0;
@@ -17,7 +21,7 @@ istream& operator>>(istream& is, Distribution& d) {
 
     if (is >> ch1 >> dd.year >> ch2 >> dd.young >> dd.middle >> dd.old >> ch3) {
         if (ch1 != '(' || ch2 != ':' || ch3 != ')') {
-            is.clear(ios_base::failbit);
+            is.clear(std::ios_base::failbit);
             return is;
         }
     } else {
@@ -35,8 +39,6 @@ class Scale {
     Scale(int b, int vb, double s): cbase {b}, vbase {vb}, scale{s} {}
     int operator()(int v) const {return cbase + (v - vbase) * scale;}
 };
-
-using namespace Graph_lib;
 
 int main() {
     constexpr int xmax = 600;
@@ -60,50 +62,50 @@ int main() {
     Scale xs {xoffset, base_year, xscale};
     Scale ys {ymax - yoffset, 0, -yscale};
 
-    Simple_window win {Point{100, 100}, xmax, ymax, "Aging Japan"};
-    Axis x {Axis::x, Point{xoffset, ymax - yoffset}, xlength,
+    Simple_window win {Graph_lib::Point{100, 100}, xmax, ymax, "Aging Japan"};
+    Graph_lib::Axis x {Graph_lib::Axis::x, Graph_lib::Point{xoffset, ymax - yoffset}, xlength,
             (end_year - base_year)/10,
             "year 1960    1970    1980     1990     "
             "2000      2010      2020      2030     2040"};
     x.label.move(-100, 0);
 
-    Axis y {Axis::y, Point{xoffset, ymax - yoffset}, ylength, 10,
+    Graph_lib::Axis y {Graph_lib::Axis::y, Graph_lib::Point{xoffset, ymax - yoffset}, ylength, 10,
             "% of population"};
 
-    Line current_year {Point{xs(2008), ys(0)}, Point{xs(2008), ys(100)}};
-    current_year.set_style(Line_style::dash);
+    Graph_lib::Line current_year {Graph_lib::Point{xs(2008), ys(0)}, Graph_lib::Point{xs(2008), ys(100)}};
+    current_year.set_style(Graph_lib::Line_style::dash);
 
-    Open_polyline children;
-    Open_polyline adults;
-    Open_polyline aged;
+    Graph_lib::Open_polyline children;
+    Graph_lib::Open_polyline adults;
+    Graph_lib::Open_polyline aged;
 
-    string file_name = "/home/bangoc/git/GPPCPP/Resource/japanese-age-data.txt";
-    ifstream ifs {file_name};
+    std::string file_name = "/home/bangoc/git/GPPCPP/Resource/japanese-age-data.txt";
+    std::ifstream ifs {file_name};
     if (!ifs)
-        error("can't open", file_name);
+        throw std::string("can't open " + file_name);
 
     for (Distribution d; ifs >> d;) {
         if (d.year < base_year || end_year < d.year)
-            error("year out of range");
+            throw std::string("year out of range");
         if (d.young + d.middle + d.old != 100)
-            error("percentages don't add up");
+            throw std::string("percentages don't add up");
         const int x = xs(d.year);
-        children.add(Point{x, ys(d.young)});
-        adults.add(Point{x, ys(d.middle)});
-        aged.add(Point{x, ys(d.old)});
+        children.add(Graph_lib::Point{x, ys(d.young)});
+        adults.add(Graph_lib::Point{x, ys(d.middle)});
+        aged.add(Graph_lib::Point{x, ys(d.old)});
     }
 
-    Text children_label {Point{20, children.point(0).y}, "age 0-14"};
-    children.set_color(Color::red);
-    children_label.set_color(Color::red);
+    Graph_lib::Text children_label {Graph_lib::Point{20, children.point(0).y}, "age 0-14"};
+    children.set_color(Graph_lib::Color::red);
+    children_label.set_color(Graph_lib::Color::red);
 
-    Text adults_label {Point{20, adults.point(0).y}, "age 15-64"};
-    adults.set_color(Color::blue);
-    adults_label.set_color(Color::blue);
+    Graph_lib::Text adults_label {Graph_lib::Point{20, adults.point(0).y}, "age 15-64"};
+    adults.set_color(Graph_lib::Color::blue);
+    adults_label.set_color(Graph_lib::Color::blue);
 
-    Text aged_label{Point{20, aged.point(0).y}, "age 65+"};
-    aged.set_color(Color::dark_green);
-    aged_label.set_color(Color::dark_green);
+    Graph_lib::Text aged_label{Graph_lib::Point{20, aged.point(0).y}, "age 65+"};
+    aged.set_color(Graph_lib::Color::dark_green);
+    aged_label.set_color(Graph_lib::Color::dark_green);
 
     win.attach(children);
     win.attach(adults);
@@ -117,5 +119,5 @@ int main() {
     win.attach(y);
     win.attach(current_year);
 
-    gui_main();
+    Graph_lib::gui_main();
 }

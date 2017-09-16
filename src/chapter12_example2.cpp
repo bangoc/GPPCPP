@@ -6,17 +6,16 @@
 #include "Graph.h" // get access to our graphics library facilities
 int main()
 {
-    using namespace Graph_lib;  // our graphics facilities are in Graph_lib
-    Point tl {100,100};  // to become top left corner of window
+    Graph_lib::Point tl {100,100};  // to become top left corner of window
     Simple_window win {tl,600,400,"Canvas"};  // make a simple window
 
-    Axis xa{Axis::x, Point{20, 300}, 280, 10, "x axis"};
+    Graph_lib::Axis xa{Graph_lib::Axis::x, Graph_lib::Point{20, 300}, 280, 10, "x axis"};
     win.attach(xa);
 
-    Axis ya{Axis::y, Point{20, 300}, 280, 10, "y axis"};
+    Graph_lib::Axis ya{Graph_lib::Axis::y, Graph_lib::Point{20, 300}, 280, 10, "y axis"};
     win.attach(ya);
 
-    Function sine{sin, 0, 100, Point{20, 150}, 1000, 50, 50};
+    Graph_lib::Function sine{sin, 0, 100, Graph_lib::Point{20, 150}, 1000, 50, 50};
     win.attach(sine);
     win.set_label("Plot a function");
 

@@ -1,5 +1,8 @@
 #include "Graph.h"
-#include<map>
+#include <map>
+#include <utility>
+#include <algorithm>
+#include <fstream>
 
 namespace Graph_lib {
 
@@ -24,7 +27,7 @@ void Shape::draw() const
 
 // does two lines (p1,p2) and (p3,p4) intersect?
 // if se return the distance of the intersect point as distances from p1
-inline pair<double,double> line_intersect(Point p1, Point p2, Point p3, Point p4, bool& parallel) 
+inline std::pair<double,double> line_intersect(Point p1, Point p2, Point p3, Point p4, bool& parallel)
 {
     double x1 = p1.x;
     double x2 = p2.x;
@@ -38,10 +41,10 @@ inline pair<double,double> line_intersect(Point p1, Point p2, Point p3, Point p4
 	double denom = ((y4 - y3)*(x2-x1) - (x4-x3)*(y2-y1));
 	if (denom == 0){
 		parallel= true;
-		return pair<double,double>(0,0);
+		return std::pair<double,double>(0,0);
 	}
 	parallel = false;
-	return pair<double,double>( ((x4-x3)*(y1-y3) - (y4-y3)*(x1-x3))/denom,
+	return std::pair<double,double>( ((x4-x3)*(y1-y3) - (y4-y3)*(x1-x3))/denom,
 								((x2-x1)*(y1-y3) - (y2-y1)*(x1-x3))/denom);
 }
 
@@ -51,7 +54,7 @@ inline pair<double,double> line_intersect(Point p1, Point p2, Point p3, Point p4
 //in which case intersection is set to the point of intersection
 bool line_segment_intersect(Point p1, Point p2, Point p3, Point p4, Point& intersection){
    bool parallel;
-   pair<double,double> u = line_intersect(p1,p2,p3,p4,parallel);
+   std::pair<double,double> u = line_intersect(p1,p2,p3,p4,parallel);
    if (parallel || u.first < 0 || u.first > 1 || u.second < 0 || u.second > 1) return false;
    intersection.x = p1.x + u.first*(p2.x - p1.x);
    intersection.y = p1.y + u.first*(p2.y - p1.y);
@@ -63,17 +66,17 @@ void Polygon::add(Point p)
 	int np = number_of_points();
 
 	if (1<np) {	// check that thenew line isn't parallel to the previous one
-		if (p==point(np-1)) error("polygon point equal to previous point");
+		if (p==point(np-1)) throw std::string("polygon point equal to previous point");
 		bool parallel;
 		line_intersect(point(np-1),p,point(np-2),point(np-1),parallel);
 		if (parallel)
-			error("two polygon points lie in a straight line");
+			throw std::string("two polygon points lie in a straight line");
 	}
 
 	for (int i = 1; i<np-1; ++i) {	// check that new segment doesn't interset and old point
 		Point ignore(0,0);
 		if (line_segment_intersect(point(np-1),p,point(i-1),point(i),ignore))
-			error("intersect in polygon");
+			throw std::string("intersect in polygon");
 	}
 	
 
@@ -83,7 +86,7 @@ void Polygon::add(Point p)
 
 void Polygon::draw_lines() const
 {
-		if (number_of_points() < 3) error("less than 3 points in a Polygon");
+		if (number_of_points() < 3) throw std::string("less than 3 points in a Polygon");
 		Closed_polyline::draw_lines();
 }
 
@@ -136,12 +139,12 @@ void Text::draw_lines() const
 	fl_font(ofnt,osz);
 }
 
-Function::Function(function<double(double)> f, double r1, double r2, Point xy, int count, double xscale, double yscale)
+Function::Function(std::function<double(double)> f, double r1, double r2, Point xy, int count, double xscale, double yscale)
 // graph f(x) for x in [r1:r2) using count line segments with (0,0) displayed at xy
 // x coordinates are scaled by xscale and y coordinates scaled by yscale
 {
-	if (r2-r1<=0) error("bad graphing range");
-	if (count<=0) error("non-positive graphing count");
+	if (r2-r1<=0) throw std::string("bad graphing range");
+	if (count<=0) throw std::string("non-positive graphing count");
 	double dist = (r2-r1)/count;
 	double r = r1;
 	for (int i = 0; i<count; ++i) {
@@ -154,8 +157,8 @@ Function::Function(Fct f, double r1, double r2, Point xy, int count, double xsca
 // graph f(x) for x in [r1:r2) using count line segments with (0,0) displayed at xy
 // x coordinates are scaled by xscale and y coordinates scaled by yscale
 {
-    if (r2-r1<=0) error("bad graphing range");
-    if (count<=0) error("non-positive graphing count");
+    if (r2-r1<=0) throw std::string("bad graphing range");
+    if (count<=0) throw std::string("non-positive graphing count");
     double dist = (r2-r1)/count;
     double r = r1;
     for (int i = 0; i<count; ++i) {
@@ -179,10 +182,10 @@ void Rectangle::draw_lines() const
 }
 
 
-Axis::Axis(Orientation d, Point xy, int length, int n, string lab)
+Axis::Axis(Orientation d, Point xy, int length, int n, std::string lab)
 	:label(Point(0,0),lab)
 {
-	if (length<0) error("bad axis length");
+	if (length<0) throw std::string("bad axis length");
 	switch (d){
 	case Axis::x:
 		{	Shape::add(xy);	// axis line
@@ -215,7 +218,7 @@ Axis::Axis(Orientation d, Point xy, int length, int n, string lab)
 		break;
 	}
 	case Axis::z:
-		error("z axis not implemented");
+		throw std::string("z axis not implemented");
 	}
 }
 
@@ -274,7 +277,7 @@ void draw_mark(Point xy, char c)
 {
 	static const int dx = 4;
 	static const int dy = 4;
-	string m(1,c);
+	std::string m(1,c);
 	fl_draw(m.c_str(),xy.x-dx,xy.y+dy);
 }
 
@@ -293,7 +296,7 @@ void Marks::draw_lines() const
 */
 
 
-std::map<string,Suffix::Encoding> suffix_map;
+std::map<std::string,Suffix::Encoding> suffix_map;
 
 int init_suffix_map()
 {
@@ -308,29 +311,29 @@ int init_suffix_map()
 	return 0;
 }
 
-Suffix::Encoding get_encoding(const string& s)
+Suffix::Encoding get_encoding(const std::string& s)
 		// try to deduce type from file name using a lookup table
 {
 	static int x = init_suffix_map();
 
-	string::const_iterator p = find(s.begin(),s.end(),'.');
+	std::string::const_iterator p = std::find(s.begin(),s.end(),'.');
 	if (p==s.end()) return Suffix::none;	// no suffix
 
-	string suf(p+1,s.end());
+	std::string suf(p+1,s.end());
 	return suffix_map[suf];
 }
 
-bool can_open(const string& s)
+bool can_open(const std::string& s)
             // check if a file named s exists and can be opened for reading
 {
-	ifstream ff(s.c_str());
+	std::ifstream ff(s.c_str());
 	return ff.good();
 }
 
 
 // somewhat overelaborate constructor
 // because errors related to image files can be such a pain to debug
-Image::Image(Point xy, string s, Suffix::Encoding e)
+Image::Image(Point xy, std::string s, Suffix::Encoding e)
 	:w(0), h(0), fn(xy,"")
 {
 	add(xy);

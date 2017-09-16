@@ -31,7 +31,7 @@ namespace Graph_lib {
     // Widget is a handle to an Fl_widget - it is *not* an Fl_widget
     // We try to keep our interface classes at arm's length from FLTK
     public:
-        Widget(Point xy, int w, int h, const string& s, Callback cb)
+        Widget(Point xy, int w, int h, const std::string& s, Callback cb)
             : loc(xy), width(w), height(h), label(s), do_it(cb)
         {}
 
@@ -43,7 +43,7 @@ namespace Graph_lib {
         Point loc;
         int width;
         int height;
-        string label;
+        std::string label;
         Callback do_it;
 
         virtual ~Widget() { }
@@ -59,7 +59,7 @@ namespace Graph_lib {
 //------------------------------------------------------------------------------
 
     struct Button : Widget {
-        Button(Point xy, int w, int h, const string& label, Callback cb)
+        Button(Point xy, int w, int h, const std::string& label, Callback cb)
             : Widget(xy,w,h,label,cb)
         {}
 
@@ -69,10 +69,10 @@ namespace Graph_lib {
 //------------------------------------------------------------------------------
 
     struct In_box : Widget {
-        In_box(Point xy, int w, int h, const string& s)
+        In_box(Point xy, int w, int h, const std::string& s)
             :Widget(xy,w,h,s,0) { }
         int get_int();
-        string get_string();
+        std::string get_string();
 
         void attach(Window& win);
     };
@@ -80,10 +80,10 @@ namespace Graph_lib {
 //------------------------------------------------------------------------------
 
     struct Out_box : Widget {
-        Out_box(Point xy, int w, int h, const string& s)
+        Out_box(Point xy, int w, int h, const std::string& s)
             :Widget(xy,w,h,s,0) { }
         void put(int);
-        void put(const string&);
+        void put(const std::string&);
 
         void attach(Window& win);
     };
@@ -92,7 +92,7 @@ namespace Graph_lib {
 
     struct Menu : Widget {
         enum Kind { horizontal, vertical };
-        Menu(Point xy, int w, int h, Kind kk, const string& label);
+        Menu(Point xy, int w, int h, Kind kk, const std::string& label);
 
         Vector_ref<Button> selection;
         Kind k;

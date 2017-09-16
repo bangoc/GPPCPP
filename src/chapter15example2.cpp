@@ -2,10 +2,10 @@
 // Created by bangoc on 04/09/2017.
 //
 
+#include <sstream>
+#include <string>
 #include "Simple_window.h"
 #include "GUI.h"
-
-using namespace Graph_lib;
 
 int fac(int n) {
     int r = 1;
@@ -31,7 +31,7 @@ int main() {
 
     constexpr int x_orig = xmax/2;
     constexpr int y_orig = ymax/2;
-    Point orig {x_orig, y_orig};
+    Graph_lib::Point orig {x_orig, y_orig};
 
     constexpr int r_min = -10;
     constexpr int r_max = 11;
@@ -41,30 +41,30 @@ int main() {
     constexpr int x_scale = 30;
     constexpr int y_scale = 30;
 
-    Function real_exp {exp, r_min, r_max, orig, 200, x_scale, y_scale};
-    real_exp.set_color(Color::blue);
+    Graph_lib::Function real_exp {exp, r_min, r_max, orig, 200, x_scale, y_scale};
+    real_exp.set_color(Graph_lib::Color::blue);
 
-    Simple_window win {Point{100, 100}, xmax, ymax, "Approximation"};
+    Simple_window win {Graph_lib::Point{100, 100}, xmax, ymax, "Approximation"};
 
     constexpr int xlength = xmax - 40;
     constexpr int ylength = ymax - 40;
 
-    Axis x {Axis::x, Point{20, y_orig}, xlength, xlength/x_scale, "one notch == 1"};
-    Axis y {Axis::y, Point{x_orig, ylength + 20}, ylength, ylength / y_scale, "one notch == 1"};
+    Graph_lib::Axis x {Graph_lib::Axis::x, Graph_lib::Point{20, y_orig}, xlength, xlength/x_scale, "one notch == 1"};
+    Graph_lib::Axis y {Graph_lib::Axis::y, Graph_lib::Point{x_orig, ylength + 20}, ylength, ylength / y_scale, "one notch == 1"};
 
-    x.set_color(Color::red);
-    y.set_color(Color::red);
+    x.set_color(Graph_lib::Color::red);
+    y.set_color(Graph_lib::Color::red);
 
     win.attach(x);
     win.attach(y);
 
     win.attach(real_exp);
     for (int n = 0; n < 50; ++n) {
-        ostringstream ss;
+        std::ostringstream ss;
         ss << "exp approximation; n== " << n;
-        string title = ss.str();
+        std::string title = ss.str();
         win.copy_label(title.c_str());
-        Function e([n](double x) -> double {return expe(x, n);},
+        Graph_lib::Function e([n](double x) -> double {return expe(x, n);},
                    r_min, r_max, orig, 200, x_scale, y_scale);
         win.attach(e);
         win.wait_for_button();
