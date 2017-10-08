@@ -12,10 +12,17 @@
 
 #include <iostream>
 
+#ifdef LINUX
+#include <FL/Fl.H>
+#include <FL/fl_draw.H>
+#include <FL/Fl_Window.H>
+#include <FL/Fl_Device.H>
+#else  // default to WIN32
 #include <FL\Fl.H>
 #include <FL\fl_draw.H>
 #include <FL\Fl_Window.H>
 #include <FL\Fl_Device.H>
+#endif
 #include <initializer_list>
 #include <vector>
 #include <functional>
