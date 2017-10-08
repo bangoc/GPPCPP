@@ -12,9 +12,10 @@
 
 #include <iostream>
 
-#include <FL/Fl.H>
-#include <FL/fl_draw.H>
-#include <FL/Fl_Window.H>
+#include <FL\Fl.H>
+#include <FL\fl_draw.H>
+#include <FL\Fl_Window.H>
+#include <FL\Fl_Device.H>
 #include <initializer_list>
 #include <vector>
 #include <functional>
@@ -24,6 +25,10 @@ struct Point {
     int x,y;
     Point(int xx, int yy) : x(xx), y(yy) { }
 };
+
+#ifndef M_PI
+#define M_PI 3.1415
+#endif
 
 class Shape {
  public:
@@ -61,7 +66,9 @@ class ClosedPolyline: public Shape {
 class MyWindow: public Fl_Window {
  public:
     MyWindow(int x, int y, int w, int h, const char* title = 0)
-            : Fl_Window(x, y, w, h, title) {}
+            : Fl_Window(x, y, w, h, title) {
+        fl_color(0, 0, 0);
+    }
     void Attach(Shape& s) {
         shapes.push_back(&s);
     }
@@ -80,7 +87,7 @@ class MyWindow: public Fl_Window {
 class Circle: public Shape {
  public:
     Circle(Point p, double r): radius(r) {
-        add(Point{p.x - r, p.y - r});
+        add(Point{p.x - (int)r, p.y - (int)r});
     }
 
  protected:
